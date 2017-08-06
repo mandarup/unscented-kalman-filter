@@ -125,9 +125,7 @@ void UKF::UpdateParamsFromFile(){
     // Radar measurement noise standard deviation radius change in m/s
     std_radrd_ = attrs[6];
 
-    std::cout << "Reading from file " << endl;
-    std::cout << "std_a_ " << std_a_ << endl;
-    std::cout << "std_radrd_ = attrs[6]; " << std_radrd_ << endl;
+    std::cout << "Init from file " << endl;
 
     return;
 }
@@ -186,66 +184,6 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
 
 }
 
-// void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
-//   /**
-//   TODO:
-//
-//   Complete this function! Make sure you switch between lidar and radar
-//   measurements.
-//   */
-//
-//   if (!is_initialized_) {
-//       InitializeStateVector(meas_package);
-//       return;
-//   }
-//
-//   // if (!is_initialized_){
-//   //   time_us_ = meas_package.timestamp_;
-//   //   if (meas_package.sensor_type_ == MeasurementPackage::RADAR){
-//   //     float rho = meas_package.raw_measurements_[0];
-//   //     float phi = meas_package.raw_measurements_[1];
-//   //     x_ << rho*cos(phi), rho*sin(phi), 0, 0, 0;
-//   //   }
-//   //   else if (meas_package.sensor_type_ == MeasurementPackage::LASER){
-//   //     x_ << meas_package.raw_measurements_[0],
-//   //           meas_package.raw_measurements_[1],
-//   //           0, 0, 0;
-//   //     // use smaller variance for lidar
-//   //     P_(0,0) = 0.5;
-//   //     P_(1,1) = 0.5;
-//   //   }
-//   //   is_initialized_ = true;
-//   //   return;
-//   // }
-//
-//   //compute the time elapsed between the current and previous measurements
-//   double dt = (double)(meas_package.timestamp_ - time_us_) / 1000000.0;	//dt - expressed in seconds
-//   time_us_ = meas_package.timestamp_;
-//
-//   // predict state vector
-//
-//   // for large time intervals (dataset-2), Eulers approx for integration fails
-//   // one solution is to use smaller time intervals
-//   // while(dt > 0.1){
-//   //   const double dt_eps = 0.05;
-//   //   Prediction(dt_eps);
-//   //   dt -= dt_eps;
-//   // }
-//   Prediction(dt);
-//
-//   // update state vector
-//   if (meas_package.sensor_type_ == MeasurementPackage::RADAR){
-//     UpdateRadar(meas_package);
-//   }
-//   else if (meas_package.sensor_type_ == MeasurementPackage::LASER){
-//     UpdateLidar(meas_package);
-//   }
-//
-//   // print the output
-//   cout << "x_ = " << x_ << endl;
-//   cout << "P_ = " << P_ << endl;
-// }
-
 
 void UKF::InitializeStateVector(MeasurementPackage meas_package){
     // first measurement
@@ -271,7 +209,7 @@ void UKF::InitializeStateVector(MeasurementPackage meas_package){
         /**
         Initialize state.
         */
-        cout << "init lidar" << endl;
+        // cout << "init lidar" << endl;
         px = meas_package.raw_measurements_[0]; // px
         py = meas_package.raw_measurements_[1]; // py
         x_(0) = px;
@@ -286,7 +224,7 @@ void UKF::InitializeStateVector(MeasurementPackage meas_package){
 
     // done initializing, no need to predict or update
     is_initialized_ = true;
-    cout << "done initialization" << endl;
+    // cout << "done initialization" << endl;
 
     return;
 }
@@ -426,19 +364,10 @@ void UKF::Prediction(double delta_t) {
         // state difference
         VectorXd x_diff = Xsig_pred_.col(i) - x_;
         //angle normalization
-        cout << "angle normalization " << i << " " << x_diff(3)<< "-->" << NormalizeAngle(x_diff(3)) << endl;
-        // while (x_diff(3)> M_PI) {
-        //     x_diff(3)-=2.*M_PI;
-        //     cout << "- " << x_diff(3) << endl;
-        // }
-        // while (x_diff(3)<-M_PI){
-        //     x_diff(3)+=2.*M_PI;
-        //     cout << "+ " << x_diff(3) << endl;
-        // }
         x_diff(3) = NormalizeAngle(x_diff(3));
 
         P_ = P_ + weights_(i) * x_diff * x_diff.transpose() ;
-        cout << "P_ = " << P_ << endl;
+        // cout << "P_ = " << P_ << endl;
     }
 
     return;
