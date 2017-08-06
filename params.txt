@@ -1,0 +1,7 @@
+std_a_  .3
+std_yawdd_  0.3
+std_laspx_  0.05
+std_laspy_  0.05
+std_radr_  0.03
+std_radphi_  0.03
+std_radrd_  0.03
